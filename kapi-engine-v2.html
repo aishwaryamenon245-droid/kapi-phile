@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapi Engine — Coffee Discovery System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8F4EF;
+  --bg2:#F2EDE6;
+  --surface:#FFFFFF;
+  --surface2:#FAF7F4;
+  --border:#E4DDD5;
+  --border2:#D5CCBF;
+  --text:#1C1410;
+  --text2:#5A4A3A;
+  --text3:#9A8878;
+  --accent:#8B5E3C;
+  --accent2:#C4895A;
+  --accent-bg:#F5EDE4;
+  --gold:#B8860B;
+  --sig:#7A4F2A;
+  --tag-bg:#EDE6DE;
+  --tag-text:#6B4A2A;
+  --seasonal:#2A5050;
+  --seasonal-bg:#E4EFEF;
+  --radius:10px;
+  --radius-lg:16px;
+  --radius-xl:24px;
+  --shadow:0 1px 4px rgba(28,20,16,0.07);
+  --shadow-md:0 4px 16px rgba(28,20,16,0.1);
+  --shadow-lg:0 12px 40px rgba(28,20,16,0.16);
+  --t:0.2s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="dark"]{
+  --bg:#110C08;
+  --bg2:#1A110C;
+  --surface:#1E1410;
+  --surface2:#241810;
+  --border:#2E2018;
+  --border2:#3E2E20;
+  --text:#F0E8E0;
+  --text2:#C0A888;
+  --text3:#7A6050;
+  --accent:#D4956A;
+  --accent2:#E8B080;
+  --accent-bg:#2A1C10;
+  --gold:#D4A840;
+  --sig:#E8B070;
+  --tag-bg:#2A1C10;
+  --tag-text:#D4956A;
+  --seasonal:#7ABABA;
+  --seasonal-bg:#0A2020;
+  --shadow:0 1px 4px rgba(0,0,0,0.3);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.6);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background var(--t),color var(--t);-webkit-font-smoothing:antialiased}
+
+/* ── HEADER ── */
+.hdr{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:0 20px}
+.hdr-inner{max-width:1360px;margin:0 auto;height:58px;display:flex;align-items:center;gap:16px}
+.logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.3px;flex-shrink:0}
+.logo em{color:var(--accent);font-style:italic}
+.hdr-stats{display:flex;gap:18px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);flex-shrink:0}
+.hdr-stats b{color:var(--accent)}
+.hdr-actions{display:flex;gap:8px;margin-left:auto}
+.icon-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all var(--t)}
+.icon-btn:hover,.icon-btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1360px;margin:0 auto;padding:24px 20px}
+
+/* ── CONTROLS ── */
+.ctrl-block{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.search-row{display:flex;gap:10px}
+.search-box{position:relative;flex:1}
+.search-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3);pointer-events:none}
+.search-input{width:100%;height:42px;padding:0 14px 0 38px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:all var(--t)}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(139,94,60,0.12)}
+.search-input::placeholder{color:var(--text3)}
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sel{height:36px;padding:0 28px 0 11px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239A8878' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;transition:all var(--t)}
+.sel:focus{border-color:var(--accent)}
+.btn-clear{height:36px;padding:0 13px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all var(--t)}
+.btn-clear:hover{background:var(--bg2);color:var(--text)}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;align-items:center;gap:5px;background:var(--accent-bg);color:var(--tag-text);padding:3px 10px 3px 12px;border-radius:999px;font-size:11px;font-weight:500}
+.chip button{background:none;border:none;cursor:pointer;color:var(--tag-text);font-size:13px;line-height:1;display:flex;align-items:center;padding:0}
+
+/* ── META ROW ── */
+.meta-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.meta-count{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace}
+.view-grp{display:flex;gap:4px}
+.vbtn{width:30px;height:30px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all var(--t)}
+.vbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── BRAND GROUPS ── */
+.brand-group{margin-bottom:20px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface)}
+.brand-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;transition:background var(--t);user-select:none}
+.brand-hdr:hover{background:var(--surface2)}
+.brand-hdr-left{display:flex;align-items:center;gap:12px}
+.brand-initial{width:36px;height:36px;border-radius:8px;background:var(--accent-bg);color:var(--accent);font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text)}
+.brand-meta{font-size:11px;color:var(--text3);margin-top:1px}
+.brand-chevron{font-size:12px;color:var(--text3);transition:transform var(--t)}
+.brand-group.open .brand-chevron{transform:rotate(180deg)}
+.brand-beans{display:none;border-top:1px solid var(--border);padding:14px}
+.brand-group.open .brand-beans{display:block}
+.beans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+
+/* ── BEAN CARD ── */
+.bean-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;cursor:pointer;transition:all var(--t);position:relative;overflow:hidden}
+.bean-card:hover{border-color:var(--accent2);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.bean-card.compare-on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(139,94,60,0.2)}
+.sig-bar{position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--accent),var(--accent2))}
+.bean-card.sig{padding-left:19px}
+.bean-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.bean-name-wrap{}
+.bean-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;line-height:1.2;color:var(--text)}
+.sig-mark{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--sig);margin-top:2px}
+.bean-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.bean-rating{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--accent)}
+.avail-badge{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;padding:2px 7px;border-radius:999px}
+.avail-ev{background:var(--accent-bg);color:var(--accent)}
+.avail-sea{background:var(--seasonal-bg);color:var(--seasonal)}
+.bean-desc{font-size:12px;color:var(--text2);font-style:italic;margin-bottom:10px;line-height:1.4}
+.bean-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.pill{padding:2px 8px;border-radius:999px;font-size:10px;font-weight:500}
+.pill-roast{background:#FBE9D0;color:#7A4010}
+.pill-body{background:#E0ECDC;color:#2A5820}
+.pill-acid{background:#D8E8F4;color:#1A4060}
+[data-theme="dark"] .pill-roast{background:#3E2000;color:#D4956A}
+[data-theme="dark"] .pill-body{background:#0E2A08;color:#7AC47A}
+[data-theme="dark"] .pill-acid{background:#0A1E30;color:#6AACD4}
+.bean-footer{display:flex;justify-content:space-between;align-items:center}
+.bean-tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{background:var(--tag-bg);color:var(--tag-text);padding:2px 8px;border-radius:999px;font-size:10px;font-weight:500}
+.cmp-btn{width:26px;height:26px;border:1.5px solid var(--border);border-radius:6px;background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all var(--t)}
+.cmp-btn:hover,.cmp-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── FLAT BEAN GRID (no-group view) ── */
+.flat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty .ico{font-size:44px;margin-bottom:14px}
+.empty h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text2);margin-bottom:6px}
+.empty p{font-size:13px}
+
+/* ── COMPARE BAR ── */
+.cmp-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:var(--bg);padding:11px 18px;border-radius:999px;z-index:200;display:flex;align-items:center;gap:14px;font-size:12px;box-shadow:var(--shadow-lg);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;opacity:0;pointer-events:none}
+.cmp-bar.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:all}
+.cmp-slots{display:flex;gap:7px}
+.cmp-slot{padding:3px 11px;border-radius:6px;font-size:11px;font-weight:500;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);min-width:70px;text-align:center}
+.cmp-slot.empty{opacity:0.35;border-style:dashed}
+.cmp-go,.cmp-clr{height:28px;padding:0 13px;border-radius:999px;border:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all var(--t)}
+.cmp-go{background:var(--accent2);color:#fff}
+.cmp-go:hover{background:var(--accent)}
+.cmp-go:disabled{opacity:0.45;cursor:default}
+.cmp-clr{background:rgba(255,255,255,0.1);color:inherit}
+.cmp-clr:hover{background:rgba(255,255,255,0.2)}
+
+/* ── MODAL OVERLAY ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.22s}
+.ov.show{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--radius-xl);width:100%;max-width:740px;max-height:90vh;overflow-y:auto;transform:scale(0.95) translateY(18px);transition:transform 0.25s cubic-bezier(0.34,1.4,0.64,1);box-shadow:var(--shadow-lg)}
+.ov.show .modal{transform:scale(1) translateY(0)}
+.m-hdr{padding:24px 26px 18px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
+.m-hdr-top{display:flex;justify-content:space-between;align-items:flex-start}
+.m-brand{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:4px}
+.m-bean{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;line-height:1.15;color:var(--text)}
+.m-desc{font-size:13px;color:var(--text2);font-style:italic;margin-top:6px;line-height:1.5}
+.m-close{width:34px;height:34px;border:1px solid var(--border);border-radius:50%;background:transparent;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0;transition:all var(--t)}
+.m-close:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.m-body{padding:22px 26px}
+.m-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+.m-sec{margin-bottom:20px}
+.m-sec h4{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.attr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.attr:last-child{border:none}
+.attr-k{color:var(--text3);font-weight:500}
+.attr-v{font-weight:600;color:var(--text)}
+.bar-wrap{margin-bottom:9px}
+.bar-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;color:var(--text3)}
+.bar-lbl b{color:var(--text2);font-weight:600}
+.bar-track{height:5px;background:var(--border);border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
+.sea-note{background:var(--seasonal-bg);color:var(--seasonal);padding:10px 14px;border-radius:var(--radius);font-size:12px;margin-bottom:16px;border-left:3px solid var(--seasonal)}
+.best-for-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.bf-badge{padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
+.bf-Black{background:#1C1410;color:#F0E8E0}
+.bf-Milk{background:#FFF5E8;color:#7A4010;border:1px solid var(--border)}
+.bf-Americano{background:#EAE4DC;color:#3A2A18}
+.bf-ColdBrew{background:#D8EEF4;color:#1A4060}
+[data-theme="dark"] .bf-Black{background:#F0E8E0;color:#1C1410}
+[data-theme="dark"] .bf-Milk{background:#3A1C00;color:#D4A870;border-color:var(--border)}
+[data-theme="dark"] .bf-Americano{background:#2A2018;color:#D4C4A8}
+[data-theme="dark"] .bf-ColdBrew{background:#0A1C28;color:#78B8D8}
+.sim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.sim-card{padding:11px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all var(--t)}
+.sim-card:hover{border-color:var(--accent2);background:var(--accent-bg)}
+.sim-bean{font-weight:600;font-size:13px;margin-bottom:1px}
+.sim-brand{font-size:10px;color:var(--text3)}
+.sim-flavour{font-size:11px;color:var(--text2);font-style:italic;margin-top:3px}
+.sim-score{font-size:10px;color:var(--accent);font-family:'DM Mono',monospace;margin-top:3px}
+
+/* ── COMPARE MODAL ── */
+.cmp-modal{background:var(--surface);border-radius:var(--radius-xl);width:100%;max-width:860px;max-height:90vh;overflow-y:auto;transform:scale(0.95) translateY(18px);transition:transform 0.25s cubic-bezier(0.34,1.4,0.64,1);box-shadow:var(--shadow-lg)}
+.ov.show .cmp-modal{transform:scale(1) translateY(0)}
+.ctbl{width:100%;border-collapse:collapse;font-size:12px}
+.ctbl th,.ctbl td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.ctbl th{font-weight:700;background:var(--surface2)}
+.ctbl .r-lbl{color:var(--text3);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.ctbl td.hi{font-weight:700;color:var(--accent)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:999px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .hdr-stats{display:none}
+  .m-grid{grid-template-columns:1fr}
+  .sim-grid{grid-template-columns:1fr}
+  .wrap{padding:16px}
+  .m-body{padding:16px 18px}
+  .m-hdr{padding:18px 18px 14px}
+  .flat-grid{grid-template-columns:1fr}
+  .cmp-bar{width:calc(100% - 32px)}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-inner">
+    <div class="logo">Kapi <em>Engine</em></div>
+    <div class="hdr-stats">
+      <span>Brands: <b id="sBrands">—</b></span>
+      <span>Beans: <b id="sBeans">—</b></span>
+      <span>Avg: <b id="sAvg">—</b></span>
+    </div>
+    <div class="hdr-actions">
+      <button class="icon-btn" id="cmpToggle" title="Compare mode" onclick="toggleCmpMode()">⚖️</button>
+      <button class="icon-btn" id="darkBtn" title="Dark mode" onclick="toggleDark()">🌙</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="ctrl-block">
+    <div class="search-row">
+      <div class="search-box">
+        <span class="search-ico">🔍</span>
+        <input class="search-input" id="searchQ" type="text" placeholder="Search bean, brand, flavour, estate…">
+      </div>
+    </div>
+    <div class="filter-row">
+      <select class="sel" id="fRoast" onchange="applyF()">
+        <option value="">All Roasts</option>
+        <option>Light</option><option>Light-Medium</option><option>Medium</option><option>Medium-Dark</option>
+      </select>
+      <select class="sel" id="fAcid" onchange="applyF()">
+        <option value="">All Acidity</option>
+        <option>Low</option><option>Medium</option><option>Medium-High</option><option>High</option>
+      </select>
+      <select class="sel" id="fBody" onchange="applyF()">
+        <option value="">All Body</option>
+        <option>Light</option><option>Medium</option><option>Full</option>
+      </select>
+      <select class="sel" id="fBrew" onchange="applyF()">
+        <option value="">All Brew</option>
+        <option>Pour-over</option><option>AeroPress</option><option>Moka</option><option>Espresso</option><option>Cold Brew</option><option>French Press</option><option>Chemex</option>
+      </select>
+      <select class="sel" id="fBest" onchange="applyF()">
+        <option value="">Best For</option>
+        <option>Black</option><option>Milk</option><option>Americano</option><option>Cold Brew</option>
+      </select>
+      <select class="sel" id="fAvail" onchange="applyF()">
+        <option value="">Availability</option>
+        <option>Evergreen</option><option>Seasonal</option>
+      </select>
+      <select class="sel" id="fUse" onchange="applyF()">
+        <option value="">Use Case</option>
+        <option>Everyday</option><option>Weekend</option><option>Experimental</option><option>Beginner</option><option>Advanced</option>
+      </select>
+      <select class="sel" id="fSort" onchange="applyF()">
+        <option value="rating_d">Rating ↓</option>
+        <option value="rating_a">Rating ↑</option>
+        <option value="bean_az">Bean A–Z</option>
+        <option value="brand_az">Brand A–Z</option>
+      </select>
+      <button class="btn-clear" onclick="clearF()">Clear</button>
+    </div>
+    <div class="chip-row" id="chipRow"></div>
+  </div>
+
+  <div class="meta-row">
+    <div class="meta-count" id="metaCount">—</div>
+    <div class="view-grp">
+      <button class="vbtn on" id="vBrand" title="Grouped by brand" onclick="setView('brand')">⊞</button>
+      <button class="vbtn" id="vFlat" title="Flat bean list" onclick="setView('flat')">☰</button>
+    </div>
+  </div>
+
+  <div id="brandView"></div>
+  <div id="flatView" style="display:none"></div>
+</div>
+
+<!-- COMPARE BAR -->
+<div class="cmp-bar" id="cmpBar">
+  <div class="cmp-slots" id="cmpSlots"></div>
+  <button class="cmp-go" id="cmpGo" onclick="openCmpModal()" disabled>Compare</button>
+  <button class="cmp-clr" onclick="clearCmp()">✕</button>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="ov" id="detailOv" onclick="ovClick(event,'detailOv')">
+  <div class="modal" id="detailModal">
+    <div class="m-hdr">
+      <div class="m-hdr-top">
+        <div>
+          <div class="m-brand" id="mBrand"></div>
+          <div class="m-bean" id="mBean"></div>
+          <div class="m-desc" id="mDesc"></div>
+        </div>
+        <button class="m-close" onclick="closeOv('detailOv')">✕</button>
+      </div>
+    </div>
+    <div class="m-body" id="mBody"></div>
+  </div>
+</div>
+
+<!-- COMPARE MODAL -->
+<div class="ov" id="cmpOv" onclick="ovClick(event,'cmpOv')">
+  <div class="cmp-modal">
+    <div class="m-hdr">
+      <div class="m-hdr-top">
+        <div>
+          <div class="m-brand">Comparison</div>
+          <div class="m-bean" id="cmpTitle" style="font-size:20px">Bean Comparison</div>
+        </div>
+        <button class="m-close" onclick="closeOv('cmpOv')">✕</button>
+      </div>
+    </div>
+    <div class="m-body">
+      <div style="overflow-x:auto"><table class="ctbl" id="cmpTbl"></table></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//   DATASET — 50 beans across 22 brands
+// ═══════════════════════════════════════════════════
+const DB=[
+  // ── BLUE TOKAI ──
+  {brand:"Blue Tokai",bean:"Vienna Roast",signature:true,availability:"Evergreen",roast:"Medium-Dark",acidity:"Low",body:"Full",flavour:"Dark chocolate, smoky",descriptor:"Dark chocolate and smoke, built for milk and comfort",best_for:["Milk","Americano"],brew_methods:["Moka","AeroPress","Espresso"],rating:4.2,estate:"Blend",region:"India",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  {brand:"Blue Tokai",bean:"Attikan Estate",signature:false,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Caramel, mild citrus, nuts",descriptor:"Reliably balanced with a caramel sweetness that doesn't overwhelm",best_for:["Milk","Americano","Black"],brew_methods:["Pour-over","AeroPress","Espresso","French Press"],rating:4.0,estate:"Attikan",region:"Coorg",process:"Washed",elevation:"1200m",variety:"Mixed",use_case:"Everyday"},
+  {brand:"Blue Tokai",bean:"Bibi Plantation",signature:false,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium",body:"Medium",flavour:"Brown sugar, green apple",descriptor:"Clean and mild — forgiving for pour-overs at home",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Chemex"],rating:3.9,estate:"Bibi Plantation",region:"Coorg",process:"Washed",elevation:"1100m",variety:"S795",use_case:"Beginner"},
+  // ── SAVORWORKS ──
+  {brand:"Savorworks",bean:"Fruit Bomb Anaerobic",signature:true,availability:"Seasonal",roast:"Light",acidity:"High",body:"Medium",flavour:"Tropical, fermented mango",descriptor:"Loud tropical fruit with a wine-like fermented edge",best_for:["Black"],brew_methods:["Pour-over","AeroPress"],rating:4.8,estate:"Kushalnagar",region:"Coorg",process:"Anaerobic",elevation:"1200–1400m",variety:"SL9",use_case:"Experimental"},
+  {brand:"Savorworks",bean:"Honey Gold Select",signature:false,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium-High",body:"Medium",flavour:"Peach, honey, floral",descriptor:"Gentle honey sweetness with a clean stone-fruit finish",best_for:["Black","Americano"],brew_methods:["Pour-over","Chemex","AeroPress"],rating:4.5,estate:"Kushalnagar",region:"Coorg",process:"Honey",elevation:"1200m",variety:"Catuai",use_case:"Weekend"},
+  {brand:"Savorworks",bean:"Washed Bright",signature:false,availability:"Evergreen",roast:"Light",acidity:"High",body:"Light",flavour:"Lime, green tea, citrus",descriptor:"Crisp and delicate — one of the cleanest Indian lights",best_for:["Black"],brew_methods:["Pour-over","Chemex"],rating:4.4,estate:"Kushalnagar",region:"Coorg",process:"Washed",elevation:"1350m",variety:"SL9",use_case:"Advanced"},
+  // ── KAPI KOTTAI ──
+  {brand:"Kapi Kottai",bean:"Curveball",signature:true,availability:"Seasonal",roast:"Light",acidity:"Medium-High",body:"Light",flavour:"Citrus, tea-like",descriptor:"Soft citrus with a calm tea-like finish",best_for:["Black"],brew_methods:["Pour-over"],rating:4.7,estate:"Baarbara",region:"Chikmagalur",process:"Washed",elevation:"1400m",variety:"S795",use_case:"Advanced"},
+  {brand:"Kapi Kottai",bean:"Southerner Espresso",signature:false,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Full",flavour:"Chocolate, toffee, round",descriptor:"Solid south Indian espresso character — sweet and full",best_for:["Milk","Americano"],brew_methods:["Espresso","Moka","AeroPress"],rating:4.1,estate:"Blend",region:"Chikmagalur",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  // ── NAIVO ──
+  {brand:"Naivo",bean:"Ratnagiri Anaerobic",signature:true,availability:"Seasonal",roast:"Light",acidity:"High",body:"Medium",flavour:"Fruity, fermented",descriptor:"Overripe fruit with a sharp, wine-like edge",best_for:["Black"],brew_methods:["Pour-over"],rating:4.8,estate:"Ratnagiri",region:"Chikmagalur",process:"Anaerobic",elevation:"1300m",variety:"Catuai",use_case:"Experimental"},
+  {brand:"Naivo",bean:"Classic Washed",signature:false,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Toffee, mild citrus, clean",descriptor:"Dependably clean and sweet — great introduction to Indian specialty",best_for:["Black","Americano","Milk"],brew_methods:["Pour-over","AeroPress","French Press"],rating:3.9,estate:"Ratnagiri",region:"Chikmagalur",process:"Washed",elevation:"1100m",variety:"S795",use_case:"Beginner"},
+  // ── CORRIDOR SEVEN ──
+  {brand:"Corridor Seven",bean:"Pink Bourbon Washed",signature:true,availability:"Seasonal",roast:"Light",acidity:"High",body:"Light",flavour:"Raspberry, hibiscus, floral",descriptor:"Delicate and floral — distinctly rare in Indian lots",best_for:["Black"],brew_methods:["Pour-over","Chemex","AeroPress"],rating:4.9,estate:"Yercaud",region:"Tamil Nadu",process:"Washed",elevation:"1500m",variety:"Pink Bourbon",use_case:"Experimental"},
+  {brand:"Corridor Seven",bean:"Natural Honey Batch",signature:false,availability:"Seasonal",roast:"Light-Medium",acidity:"Medium-High",body:"Medium",flavour:"Peach, cane sugar, jammy",descriptor:"Jammy sweetness that builds on each sip",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress"],rating:4.6,estate:"Yercaud",region:"Tamil Nadu",process:"Honey",elevation:"1450m",variety:"SL9",use_case:"Weekend"},
+  {brand:"Corridor Seven",bean:"Everyday Espresso",signature:false,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Full",flavour:"Walnut, caramel, mild cocoa",descriptor:"Reliable house espresso with no rough edges",best_for:["Milk","Americano"],brew_methods:["Espresso","Moka","AeroPress"],rating:4.0,estate:"Blend",region:"India",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  // ── SUBKO ──
+  {brand:"Subko",bean:"Bombay Natural",signature:true,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium-High",body:"Medium",flavour:"Caramelised pineapple, brown sugar",descriptor:"Tropical sweetness with a caramel depth that lingers",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Filter"],rating:4.6,estate:"Chikmagalur",region:"Karnataka",process:"Natural",elevation:"1200m",variety:"Catuai",use_case:"Weekend"},
+  {brand:"Subko",bean:"Gateway Washed",signature:false,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Hazelnut, mild stone fruit",descriptor:"Accessible and clean — approachable without being boring",best_for:["Black","Americano","Milk"],brew_methods:["Pour-over","AeroPress","Espresso"],rating:4.1,estate:"Chikmagalur",region:"Karnataka",process:"Washed",elevation:"1100m",variety:"S795",use_case:"Everyday"},
+  // ── KC ROASTERS ──
+  {brand:"KC Roasters",bean:"Jasmine Anaerobic",signature:true,availability:"Seasonal",roast:"Light",acidity:"High",body:"Light",flavour:"Jasmine, stone fruit, floral",descriptor:"Transparently floral — the closest Indian coffee gets to Yirgacheffe",best_for:["Black"],brew_methods:["Pour-over","Chemex","AeroPress"],rating:4.7,estate:"Wayanad",region:"Kerala",process:"Anaerobic",elevation:"1400m",variety:"SL9",use_case:"Advanced"},
+  {brand:"KC Roasters",bean:"Estate Washed",signature:false,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium",body:"Medium",flavour:"Plum, mild toffee, clean",descriptor:"Well-structured without being showy — solid weekday coffee",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","French Press"],rating:4.2,estate:"Wayanad",region:"Kerala",process:"Washed",elevation:"1200m",variety:"S795",use_case:"Everyday"},
+  // ── FLYING SQUIRREL ──
+  {brand:"Flying Squirrel",bean:"Forest Natural",signature:true,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Full",flavour:"Blueberry, dark chocolate",descriptor:"Earthy blueberry notes on a full, silky body",best_for:["Milk","Americano","Black"],brew_methods:["Pour-over","French Press","AeroPress"],rating:4.3,estate:"Kodagu",region:"Coorg",process:"Natural",elevation:"1100m",variety:"Mixed",use_case:"Weekend"},
+  {brand:"Flying Squirrel",bean:"Cloud Nine Light",signature:false,availability:"Seasonal",roast:"Light",acidity:"Medium-High",body:"Light",flavour:"Yuzu, white flowers, clean",descriptor:"Light and luminous — a surprisingly delicate Coorg lot",best_for:["Black"],brew_methods:["Pour-over","Chemex"],rating:4.4,estate:"Kodagu",region:"Coorg",process:"Washed",elevation:"1300m",variety:"SL9",use_case:"Advanced"},
+  // ── CURIOUS LIFE ──
+  {brand:"Curious Life",bean:"Curiosity Natural",signature:true,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium-High",body:"Medium",flavour:"Cherry, cocoa nib, sweet",descriptor:"Fruit-forward with a clean chocolate base that doesn't fade",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Chemex"],rating:4.5,estate:"Chikmagalur",region:"Karnataka",process:"Natural",elevation:"1200m",variety:"Catuai",use_case:"Weekend"},
+  {brand:"Curious Life",bean:"Life Honey",signature:false,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium",body:"Medium",flavour:"Apricot, honey, mild floral",descriptor:"Gentle and sweet — one of the easiest drinking honeys in India",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Filter"],rating:4.2,estate:"Chikmagalur",region:"Karnataka",process:"Honey",elevation:"1150m",variety:"S795",use_case:"Beginner"},
+  // ── SLEEPY OWL ──
+  {brand:"Sleepy Owl",bean:"Cold Brew Blend",signature:true,availability:"Evergreen",roast:"Medium",acidity:"Low",body:"Full",flavour:"Smooth cocoa, mild sweetness",descriptor:"Engineered for cold brew — smooth, low-acid, no bitterness",best_for:["Cold Brew","Milk"],brew_methods:["Cold Brew","French Press"],rating:4.1,estate:"Blend",region:"India",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  {brand:"Sleepy Owl",bean:"Original House Blend",signature:false,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Toffee, mild fruit, balanced",descriptor:"A safe, reliable everyday cup with no surprises",best_for:["Milk","Americano","Cold Brew"],brew_methods:["French Press","Cold Brew","Filter"],rating:3.8,estate:"Blend",region:"India",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  // ── BLACK BAZA ──
+  {brand:"Black Baza",bean:"Rainforest Washed",signature:true,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Wild berry, earthy, forest",descriptor:"Grown under canopy — slight wildness that feels intentional",best_for:["Black","Americano"],brew_methods:["Pour-over","French Press","Filter"],rating:4.1,estate:"Kodagu Forest",region:"Coorg",process:"Washed",elevation:"1000m",variety:"Mixed",use_case:"Weekend"},
+  {brand:"Black Baza",bean:"Shade Natural",signature:false,availability:"Seasonal",roast:"Light-Medium",acidity:"Medium-High",body:"Medium",flavour:"Grape, fig, mild spice",descriptor:"Complex fruit with a dry spiced finish — distinctive",best_for:["Black"],brew_methods:["Pour-over","AeroPress"],rating:4.3,estate:"Kodagu Forest",region:"Coorg",process:"Natural",elevation:"1100m",variety:"SL9",use_case:"Weekend"},
+  // ── DOPE COFFEE ──
+  {brand:"Dope Coffee",bean:"Urban Anaerobic",signature:true,availability:"Seasonal",roast:"Light",acidity:"High",body:"Medium",flavour:"Passion fruit, lychee, funky",descriptor:"Maximally funky — not for the faint-hearted or milk drinkers",best_for:["Black"],brew_methods:["Pour-over","AeroPress"],rating:4.5,estate:"Coorg",region:"Karnataka",process:"Anaerobic",elevation:"1250m",variety:"Catuai",use_case:"Experimental"},
+  {brand:"Dope Coffee",bean:"Smooth Criminal Cold",signature:false,availability:"Evergreen",roast:"Medium",acidity:"Low",body:"Full",flavour:"Dark chocolate, brown sugar",descriptor:"Smooth, low-acid cold brew base that punches in milk too",best_for:["Cold Brew","Milk"],brew_methods:["Cold Brew","French Press","Moka"],rating:4.0,estate:"Blend",region:"India",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  // ── ARAKU ──
+  {brand:"Araku",bean:"Tribal Heritage",signature:true,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Earthy, mild caramel, grain",descriptor:"Tribal grown, biodynamic — earthy and grounded",best_for:["Black","Americano","Milk"],brew_methods:["Pour-over","Filter","French Press"],rating:3.9,estate:"Araku Valley",region:"Andhra Pradesh",process:"Washed",elevation:"900–1100m",variety:"Mixed",use_case:"Everyday"},
+  {brand:"Araku",bean:"Signature Natural",signature:false,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium",body:"Medium",flavour:"Sweet, mild fruit, grain",descriptor:"Gentle natural process with understated sweetness",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Filter"],rating:4.0,estate:"Araku Valley",region:"Andhra Pradesh",process:"Natural",elevation:"1000m",variety:"Mixed",use_case:"Beginner"},
+  // ── HALLI BERRI ──
+  {brand:"Halli Berri",bean:"Berry Honey",signature:true,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Blackberry, brown sugar, honey",descriptor:"Hill country sweetness — comforting and genuinely fruity",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Filter"],rating:4.2,estate:"Chikmagalur",region:"Karnataka",process:"Honey",elevation:"1150m",variety:"S795",use_case:"Weekend"},
+  {brand:"Halli Berri",bean:"Estate Light",signature:false,availability:"Seasonal",roast:"Light",acidity:"Medium-High",body:"Light",flavour:"Mandarin, light floral",descriptor:"Fresh and delicate — classic light roast from hill slopes",best_for:["Black"],brew_methods:["Pour-over","Chemex"],rating:4.3,estate:"Chikmagalur",region:"Karnataka",process:"Washed",elevation:"1300m",variety:"SL9",use_case:"Advanced"},
+  // ── PRISTINE ──
+  {brand:"Pristine Coffee",bean:"Delicate Washed",signature:true,availability:"Evergreen",roast:"Light",acidity:"High",body:"Light",flavour:"Lemon, chamomile, clean",descriptor:"Transparently clean — water clarity in a cup",best_for:["Black"],brew_methods:["Pour-over","Chemex","AeroPress"],rating:4.4,estate:"Wayanad",region:"Kerala",process:"Washed",elevation:"1400m",variety:"S795",use_case:"Advanced"},
+  {brand:"Pristine Coffee",bean:"Honey Reserve",signature:false,availability:"Seasonal",roast:"Light-Medium",acidity:"Medium-High",body:"Medium",flavour:"Nectarine, caramel, floral",descriptor:"Ripe nectarine sweetness with a lingering caramel close",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress"],rating:4.5,estate:"Wayanad",region:"Kerala",process:"Honey",elevation:"1350m",variety:"Catuai",use_case:"Weekend"},
+  // ── MALABAR MONSOON ──
+  {brand:"Malabar Monsoon",bean:"Monsooned Malabar AA",signature:true,availability:"Evergreen",roast:"Medium-Dark",acidity:"Low",body:"Full",flavour:"Earthy, musty, warm spice",descriptor:"India's most unique process — musty warmth, zero acidity",best_for:["Milk","Americano"],brew_methods:["Espresso","Moka","French Press"],rating:4.0,estate:"Malabar Coast",region:"Kerala",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  // ── SEVEN BEANS ──
+  {brand:"Seven Beans",bean:"Bangalore Dark",signature:true,availability:"Evergreen",roast:"Medium-Dark",acidity:"Low",body:"Full",flavour:"Bittersweet chocolate, smoky",descriptor:"City roast depth — intense and structured for espresso",best_for:["Milk","Americano"],brew_methods:["Espresso","Moka","AeroPress"],rating:3.9,estate:"Blend",region:"Karnataka",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  {brand:"Seven Beans",bean:"Double Washed Origin",signature:false,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Cocoa, mild citrus, clean",descriptor:"Cleaner than the dark — more origin character shows through",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Filter"],rating:4.0,estate:"Coorg",region:"Karnataka",process:"Washed",elevation:"1100m",variety:"S795",use_case:"Everyday"},
+  // ── ROASTERY COFFEE HOUSE ──
+  {brand:"Roastery Coffee House",bean:"Artisan Natural",signature:true,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium-High",body:"Medium",flavour:"Cherry jam, cocoa, round",descriptor:"Rich cherry notes balanced against a steady cocoa base",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Espresso"],rating:4.3,estate:"Chikmagalur",region:"Karnataka",process:"Natural",elevation:"1150m",variety:"Catuai",use_case:"Weekend"},
+  {brand:"Roastery Coffee House",bean:"Co-ferment Experiment",signature:false,availability:"Seasonal",roast:"Light",acidity:"High",body:"Medium",flavour:"Mango, fermented grape, wild",descriptor:"Intentionally wild — built for curious palates only",best_for:["Black"],brew_methods:["Pour-over","AeroPress"],rating:4.6,estate:"Chikmagalur",region:"Karnataka",process:"Co-ferment",elevation:"1200m",variety:"SL9",use_case:"Experimental"},
+  // ── AINMANE ──
+  {brand:"Ainmane",bean:"Estate Reserve",signature:true,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Balanced, caramel, clean",descriptor:"Estate-grown and consistent — a reliable all-rounder",best_for:["All"],brew_methods:["Pour-over","AeroPress","Espresso","Filter"],rating:4.0,estate:"Ainmane",region:"Coorg",process:"Washed",elevation:"1050m",variety:"Mixed",use_case:"Everyday"},
+  {brand:"Ainmane",bean:"Morning Natural",signature:false,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium",body:"Medium",flavour:"Red apple, sweet, mild floral",descriptor:"Sweetly approachable — good morning coffee",best_for:["Black","Americano","Milk"],brew_methods:["Pour-over","AeroPress","Filter","French Press"],rating:3.9,estate:"Ainmane",region:"Coorg",process:"Natural",elevation:"1000m",variety:"S795",use_case:"Beginner"},
+  // ── BLOOM ──
+  {brand:"Bloom Coffee",bean:"Floral Washed",signature:true,availability:"Seasonal",roast:"Light",acidity:"High",body:"Light",flavour:"Hibiscus, jasmine, tea",descriptor:"Floral and light — almost tea-like in its delicacy",best_for:["Black"],brew_methods:["Pour-over","Chemex","AeroPress"],rating:4.4,estate:"Nilgiris",region:"Tamil Nadu",process:"Washed",elevation:"1600m",variety:"SL9",use_case:"Advanced"},
+  {brand:"Bloom Coffee",bean:"Sunrise Honey",signature:false,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium-High",body:"Medium",flavour:"Peach, orange blossom, sweet",descriptor:"Sunny and sweet — honey process done with care",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Filter"],rating:4.2,estate:"Nilgiris",region:"Tamil Nadu",process:"Honey",elevation:"1500m",variety:"Catuai",use_case:"Weekend"},
+  // ── KAFFA CERRADO ──
+  {brand:"Kaffa Cerrado",bean:"Smooth Blend",signature:true,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Full",flavour:"Nuts, cocoa, caramel",descriptor:"Full-bodied and nutty — designed for everyday espresso milk drinks",best_for:["Milk","Americano"],brew_methods:["Espresso","Moka","French Press"],rating:3.9,estate:"Blend",region:"India",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  // ── RIVERHILL ──
+  {brand:"Riverhill",bean:"Citrus Honey",signature:true,availability:"Evergreen",roast:"Light-Medium",acidity:"Medium-High",body:"Medium",flavour:"Sweet citrus, honey, apricot",descriptor:"Fresh and sweet — honeyed acidity that doesn't overpower",best_for:["Black","Americano"],brew_methods:["Pour-over","Filter","AeroPress"],rating:4.2,estate:"Chikmagalur",region:"Karnataka",process:"Honey",elevation:"1200m",variety:"S795",use_case:"Weekend"},
+  {brand:"Riverhill",bean:"Hill Washed",signature:false,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Caramel, mild green apple",descriptor:"Clean and straightforward — workhorse of the lineup",best_for:["Black","Americano","Milk"],brew_methods:["Pour-over","AeroPress","Filter","Espresso"],rating:3.8,estate:"Chikmagalur",region:"Karnataka",process:"Washed",elevation:"1100m",variety:"Mixed",use_case:"Everyday"},
+  // ── THIRD WAVE COFFEE ROASTERS ──
+  {brand:"Third Wave Coffee",bean:"Estate Espresso",signature:true,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Full",flavour:"Chocolate, caramel, smooth",descriptor:"Well-rounded, crowd-pleasing espresso with consistent extraction",best_for:["Milk","Americano"],brew_methods:["Espresso","Moka","AeroPress"],rating:4.0,estate:"Blend",region:"India",process:"Washed",elevation:"—",variety:"Mixed",use_case:"Everyday"},
+  {brand:"Third Wave Coffee",bean:"Origin Light",signature:false,availability:"Seasonal",roast:"Light",acidity:"High",body:"Light",flavour:"Citrus, bright, floral",descriptor:"Their brightest offering — more character than the espresso line",best_for:["Black"],brew_methods:["Pour-over","AeroPress","Chemex"],rating:4.2,estate:"Coorg",region:"Karnataka",process:"Washed",elevation:"1250m",variety:"SL9",use_case:"Weekend"},
+  // ── SPRING ROAST ──
+  {brand:"Spring Roast",bean:"Seasonal Light",signature:true,availability:"Seasonal",roast:"Light",acidity:"High",body:"Light",flavour:"Bright citrus, spring bloom",descriptor:"Every batch is different — chasing seasonal peaks across estates",best_for:["Black"],brew_methods:["Pour-over","Chemex","AeroPress"],rating:4.4,estate:"Various",region:"India",process:"Washed",elevation:"1200–1600m",variety:"Various",use_case:"Advanced"},
+  // ── KOTE COFFEE ──
+  {brand:"Kote Coffee",bean:"Kote Estate Washed",signature:true,availability:"Evergreen",roast:"Medium",acidity:"Medium",body:"Medium",flavour:"Mild citrus, almond, clean",descriptor:"Pleasant, unfussy, and honest — everyday at its best",best_for:["Black","Americano"],brew_methods:["Pour-over","AeroPress","Espresso","Filter"],rating:3.9,estate:"Kote Estate",region:"Coorg",process:"Washed",elevation:"1050m",variety:"S795",use_case:"Everyday"},
+];
+
+// ═══════════════════════════════════════════════════
+//   STATE
+// ═══════════════════════════════════════════════════
+let filtered=[...DB];
+let view='brand';
+let cmpMode=false;
+let cmpList=[];
+
+const lvl={Low:1,Medium:2,"Medium-High":3,High:4,Light:1,"Light-Medium":2,"Medium-Dark":3,Full:3};
+
+// ═══════════════════════════════════════════════════
+//   INIT
+// ═══════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  applyF();
+  updateHdrStats();
+  document.getElementById('searchQ').addEventListener('input',()=>{clearTimeout(window._st);window._st=setTimeout(applyF,160)});
+});
+
+function updateHdrStats(){
+  const brands=new Set(DB.map(b=>b.brand)).size;
+  const avg=(DB.reduce((s,b)=>s+b.rating,0)/DB.length).toFixed(2);
+  document.getElementById('sBrands').textContent=brands;
+  document.getElementById('sBeans').textContent=DB.length;
+  document.getElementById('sAvg').textContent=avg;
+}
+
+// ═══════════════════════════════════════════════════
+//   FILTERS
+// ═══════════════════════════════════════════════════
+function applyF(){
+  const q=document.getElementById('searchQ').value.toLowerCase().trim();
+  const roast=document.getElementById('fRoast').value;
+  const acid=document.getElementById('fAcid').value;
+  const body=document.getElementById('fBody').value;
+  const brew=document.getElementById('fBrew').value;
+  const best=document.getElementById('fBest').value;
+  const avail=document.getElementById('fAvail').value;
+  const useC=document.getElementById('fUse').value;
+  const sort=document.getElementById('fSort').value;
+
+  filtered=DB.filter(b=>{
+    if(roast&&b.roast!==roast) return false;
+    if(acid&&b.acidity!==acid) return false;
+    if(body&&b.body!==body) return false;
+    if(avail&&b.availability!==avail) return false;
+    if(useC&&b.use_case!==useC) return false;
+    if(brew&&!b.brew_methods.includes(brew)) return false;
+    if(best&&!b.best_for.includes(best)&&!b.best_for.includes('All')) return false;
+    if(q){
+      const h=[b.brand,b.bean,b.flavour,b.descriptor,b.estate,b.region,b.variety].join(' ').toLowerCase();
+      if(!h.includes(q)) return false;
+    }
+    return true;
+  });
+
+  filtered.sort((a,b2)=>{
+    if(sort==='rating_d') return b2.rating-a.rating;
+    if(sort==='rating_a') return a.rating-b2.rating;
+    if(sort==='bean_az') return a.bean.localeCompare(b2.bean);
+    if(sort==='brand_az') return a.brand.localeCompare(b2.brand);
+    return b2.rating-a.rating;
+  });
+
+  renderChips({roast,acid,body,brew,best,avail,useC});
+  document.getElementById('metaCount').textContent=`${filtered.length} of ${DB.length} beans`;
+  render();
+}
+
+function clearF(){
+  document.getElementById('searchQ').value='';
+  ['fRoast','fAcid','fBody','fBrew','fBest','fAvail','fUse'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fSort').value='rating_d';
+  applyF();
+}
+
+function renderChips(f){
+  const labels={roast:'Roast',acid:'Acidity',body:'Body',brew:'Brew',best:'Best For',avail:'Avail',useC:'Use Case'};
+  const row=document.getElementById('chipRow');
+  row.innerHTML=Object.entries(f).filter(([k,v])=>v).map(([k,v])=>`
+    <div class="chip">${labels[k]}: ${v}<button onclick="clrChip('${k}')">×</button></div>`).join('');
+}
+function clrChip(k){
+  const map={roast:'fRoast',acid:'fAcid',body:'fBody',brew:'fBrew',best:'fBest',avail:'fAvail',useC:'fUse'};
+  if(map[k]) document.getElementById(map[k]).value='';
+  applyF();
+}
+
+// ═══════════════════════════════════════════════════
+//   VIEW
+// ═══════════════════════════════════════════════════
+function setView(v){
+  view=v;
+  document.getElementById('vBrand').classList.toggle('on',v==='brand');
+  document.getElementById('vFlat').classList.toggle('on',v==='flat');
+  document.getElementById('brandView').style.display=v==='brand'?'':'none';
+  document.getElementById('flatView').style.display=v==='flat'?'':'none';
+  render();
+}
+
+function render(){
+  if(view==='brand') renderBrand();
+  else renderFlat();
+}
+
+// ── BRAND GROUPED VIEW ──
+function renderBrand(){
+  const bv=document.getElementById('brandView');
+  if(!filtered.length){bv.innerHTML=emptyHTML();return;}
+  const groups={};
+  filtered.forEach(b=>{if(!groups[b.brand])groups[b.brand]=[];groups[b.brand].push(b);});
+  bv.innerHTML=Object.entries(groups).map(([brand,beans])=>{
+    const beansHTML=beans.map(b=>beanCardHTML(b)).join('');
+    return`<div class="brand-group open">
+      <div class="brand-hdr" onclick="toggleGroup(this)">
+        <div class="brand-hdr-left">
+          <div class="brand-initial">${brand[0]}</div>
+          <div>
+            <div class="brand-name">${brand}</div>
+            <div class="brand-meta">${beans.length} bean${beans.length>1?'s':''} · ${beans[0].region}</div>
+          </div>
+        </div>
+        <span class="brand-chevron">▼</span>
+      </div>
+      <div class="brand-beans">
+        <div class="beans-grid">${beansHTML}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleGroup(hdr){
+  hdr.closest('.brand-group').classList.toggle('open');
+}
+
+// ── FLAT VIEW ──
+function renderFlat(){
+  const fv=document.getElementById('flatView');
+  if(!filtered.length){fv.innerHTML=emptyHTML();return;}
+  fv.innerHTML=`<div class="flat-grid">${filtered.map(b=>beanCardHTML(b)).join('')}</div>`;
+}
+
+function beanCardHTML(b){
+  const inCmp=cmpList.includes(b.bean+'|'+b.brand);
+  return`<div class="bean-card${b.signature?' sig':''} ${inCmp?'compare-on':''}" onclick="openDetail('${esc(b.bean)}','${esc(b.brand)}')">
+    ${b.signature?'<div class="sig-bar"></div>':''}
+    <div class="bean-top">
+      <div class="bean-name-wrap">
+        <div class="bean-name">${b.bean}</div>
+        ${b.signature?'<div class="sig-mark">✦ Signature</div>':''}
+      </div>
+      <div class="bean-right">
+        <div class="bean-rating">★ ${b.rating.toFixed(1)}</div>
+        <span class="avail-badge ${b.availability==='Evergreen'?'avail-ev':'avail-sea'}">${b.availability==='Evergreen'?'⬤ Evergreen':'◈ Seasonal'}</span>
+      </div>
+    </div>
+    <div class="bean-desc">${b.descriptor}</div>
+    <div class="bean-pills">
+      <span class="pill pill-roast">${b.roast}</span>
+      <span class="pill pill-body">${b.body}</span>
+      <span class="pill pill-acid">${b.acidity} acidity</span>
+    </div>
+    <div class="bean-footer">
+      <div class="bean-tags">${b.best_for.slice(0,3).map(x=>`<span class="tag">${x}</span>`).join('')}</div>
+      ${cmpMode?`<button class="cmp-btn${inCmp?' on':''}" onclick="toggleCmp('${esc(b.bean)}','${esc(b.brand)}',event)">${inCmp?'✓':'+'}</button>`:''}
+    </div>
+  </div>`;
+}
+
+function emptyHTML(){
+  return`<div class="empty"><div class="ico">☕</div><h3>No beans match</h3><p>Try clearing some filters.</p></div>`;
+}
+
+function esc(s){return s.replace(/'/g,"\\'").replace(/"/g,'&quot;')}
+
+// ═══════════════════════════════════════════════════
+//   DETAIL MODAL
+// ═══════════════════════════════════════════════════
+function openDetail(bean,brand){
+  const b=DB.find(x=>x.bean===bean&&x.brand===brand);
+  if(!b) return;
+  document.getElementById('mBrand').textContent=b.brand;
+  document.getElementById('mBean').textContent=b.bean;
+  document.getElementById('mDesc').textContent=b.descriptor;
+
+  const pct=v=>({Low:20,Medium:45,"Medium-High":68,High:90,Light:20,"Light-Medium":40,Medium:55,"Medium-Dark":75,Full:90}[v]||50);
+
+  // Similarity
+  const similar=DB.filter(x=>!(x.bean===b.bean&&x.brand===b.brand)).map(x=>{
+    let sc=0;
+    if(x.roast===b.roast) sc+=2;
+    if(x.acidity===b.acidity) sc+=2;
+    const bf1=x.best_for||[],bf2=b.best_for||[];
+    if(bf1.some(v=>bf2.includes(v)||bf2.includes('All')||bf1.includes('All'))) sc+=2;
+    if(x.process===b.process) sc+=1;
+    return{...x,_sc:sc};
+  }).sort((a,z)=>z._sc-a._sc||z.rating-a.rating).slice(0,4);
+
+  const bfEmoji={Black:'☕',Milk:'🥛',Americano:'💧','Cold Brew':'🧊',All:'✨'};
+  const bfKey=v=>v.replace(/\s/g,'');
+
+  document.getElementById('mBody').innerHTML=`
+    ${b.availability==='Seasonal'?`<div class="sea-note">◈ Seasonal release — if unavailable, see similar beans below with matching profile</div>`:''}
+    <div class="m-grid">
+      <div>
+        <div class="m-sec"><h4>Sensory Profile</h4>
+          <div class="bar-wrap"><div class="bar-lbl">Roast <b>${b.roast}</b></div><div class="bar-track"><div class="bar-fill" style="width:${pct(b.roast)}%"></div></div></div>
+          <div class="bar-wrap"><div class="bar-lbl">Acidity <b>${b.acidity}</b></div><div class="bar-track"><div class="bar-fill" style="width:${pct(b.acidity)}%"></div></div></div>
+          <div class="bar-wrap"><div class="bar-lbl">Body <b>${b.body}</b></div><div class="bar-track"><div class="bar-fill" style="width:${pct(b.body)}%"></div></div></div>
+        </div>
+        <div class="m-sec"><h4>Flavour</h4>
+          <div style="font-size:14px;color:var(--text2);font-style:italic;line-height:1.5">${b.flavour}</div>
+        </div>
+        <div class="m-sec"><h4>Best For</h4>
+          <div class="best-for-wrap">${b.best_for.map(v=>`<span class="bf-badge bf-${bfKey(v)}">${bfEmoji[v]||'☕'} ${v}</span>`).join('')}</div>
+        </div>
+        <div class="m-sec"><h4>Brew Methods</h4>
+          <div class="bean-tags">${b.brew_methods.map(m=>`<span class="tag" style="font-size:11px;padding:4px 10px">${m}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div>
+        <div class="m-sec"><h4>Origin</h4>
+          <div class="attr"><span class="attr-k">Estate</span><span class="attr-v">${b.estate}</span></div>
+          <div class="attr"><span class="attr-k">Region</span><span class="attr-v">${b.region}</span></div>
+          <div class="attr"><span class="attr-k">Process</span><span class="attr-v">${b.process}</span></div>
+          <div class="attr"><span class="attr-k">Elevation</span><span class="attr-v">${b.elevation}</span></div>
+          <div class="attr"><span class="attr-k">Variety</span><span class="attr-v">${b.variety}</span></div>
+        </div>
+        <div class="m-sec"><h4>Details</h4>
+          <div class="attr"><span class="attr-k">Use Case</span><span class="attr-v">${b.use_case}</span></div>
+          <div class="attr"><span class="attr-k">Availability</span><span class="attr-v">${b.availability}</span></div>
+          <div class="attr"><span class="attr-k">Signature</span><span class="attr-v">${b.signature?'✦ Yes':'—'}</span></div>
+          <div class="attr"><span class="attr-k">Rating</span><span class="attr-v" style="color:var(--accent)">★ ${b.rating.toFixed(1)}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="m-sec"><h4>Similar Beans</h4>
+      <div class="sim-grid">${similar.map(s=>`
+        <div class="sim-card" onclick="closeOv('detailOv');setTimeout(()=>openDetail('${esc(s.bean)}','${esc(s.brand)}'),130)">
+          <div class="sim-bean">${s.bean}</div>
+          <div class="sim-brand">${s.brand}</div>
+          <div class="sim-flavour">${s.flavour}</div>
+          <div class="sim-score">Match ${s._sc}/7 · ★ ${s.rating.toFixed(1)} · ${s.availability}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  openOv('detailOv');
+}
+
+// ═══════════════════════════════════════════════════
+//   COMPARE
+// ═══════════════════════════════════════════════════
+function toggleCmpMode(){
+  cmpMode=!cmpMode;
+  document.getElementById('cmpToggle').classList.toggle('on',cmpMode);
+  if(!cmpMode) clearCmp();
+  else render();
+  render();
+}
+
+function toggleCmp(bean,brand,e){
+  e&&e.stopPropagation();
+  if(!cmpMode){cmpMode=true;document.getElementById('cmpToggle').classList.add('on');}
+  const key=bean+'|'+brand;
+  const idx=cmpList.indexOf(key);
+  if(idx>-1) cmpList.splice(idx,1);
+  else if(cmpList.length<3) cmpList.push(key);
+  else{alert('Max 3 beans.');return;}
+  updateCmpBar();
+  render();
+}
+
+function clearCmp(){cmpList=[];updateCmpBar();render();}
+
+function updateCmpBar(){
+  const bar=document.getElementById('cmpBar');
+  bar.classList.toggle('show',cmpList.length>0);
+  const slotsHTML=[0,1,2].map(i=>cmpList[i]
+    ?`<div class="cmp-slot">${cmpList[i].split('|')[0].substring(0,10)}…</div>`
+    :`<div class="cmp-slot empty">+ add</div>`).join('');
+  document.getElementById('cmpSlots').innerHTML=slotsHTML;
+  document.getElementById('cmpGo').disabled=cmpList.length<2;
+  document.getElementById('cmpGo').style.opacity=cmpList.length<2?'0.45':'1';
+}
+
+function openCmpModal(){
+  if(cmpList.length<2) return;
+  const beans=cmpList.map(k=>{const[bean,brand]=k.split('|');return DB.find(x=>x.bean===bean&&x.brand===brand);}).filter(Boolean);
+  document.getElementById('cmpTitle').textContent=beans.map(b=>b.bean).join(' vs ');
+  const maxR=Math.max(...beans.map(b=>b.rating));
+  const rows=[
+    {l:'Brand',k:'brand'},
+    {l:'Roast',k:'roast'},
+    {l:'Acidity',k:'acidity'},
+    {l:'Body',k:'body'},
+    {l:'Flavour',k:'flavour',style:'font-style:italic'},
+    {l:'Process',k:'process'},
+    {l:'Region',k:'region'},
+    {l:'Elevation',k:'elevation'},
+    {l:'Variety',k:'variety'},
+    {l:'Best For',k:'best_for',fmt:v=>(v||[]).join(', ')},
+    {l:'Brew',k:'brew_methods',fmt:v=>(v||[]).join(', ')},
+    {l:'Use Case',k:'use_case'},
+    {l:'Availability',k:'availability'},
+    {l:'Rating',k:'rating',fmt:v=>`★ ${v.toFixed(1)}`,hi:true},
+  ];
+  let html=`<thead><tr><th class="r-lbl">Attribute</th>${beans.map(b=>`<th>${b.bean}<br><span style="font-size:10px;font-weight:400;opacity:0.6">${b.brand}</span></th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(r=>{
+    html+=`<tr><td class="r-lbl">${r.l}</td>`;
+    beans.forEach(b=>{
+      const val=r.fmt?r.fmt(b[r.k]):b[r.k]||'—';
+      const hi=r.hi&&b.rating===maxR;
+      html+=`<td class="${hi?'hi':''}" ${r.style?`style="${r.style}"`:''}>${val}</td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody>`;
+  document.getElementById('cmpTbl').innerHTML=html;
+  openOv('cmpOv');
+}
+
+// ═══════════════════════════════════════════════════
+//   OVERLAY HELPERS
+// ═══════════════════════════════════════════════════
+function openOv(id){document.getElementById(id).classList.add('show');document.body.style.overflow='hidden';}
+function closeOv(id){document.getElementById(id).classList.remove('show');document.body.style.overflow='';}
+function ovClick(e,id){if(e.target.id===id)closeOv(id);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOv('detailOv');closeOv('cmpOv');}});
+
+// ═══════════════════════════════════════════════════
+//   DARK MODE
+// ═══════════════════════════════════════════════════
+function toggleDark(){
+  const d=document.documentElement;
+  const on=d.getAttribute('data-theme')==='dark';
+  d.setAttribute('data-theme',on?'light':'dark');
+  document.getElementById('darkBtn').textContent=on?'🌙':'☀️';
+}
+</script>
+</body>
+</html>
